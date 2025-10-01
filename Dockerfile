@@ -18,8 +18,15 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Create necessary directories
 RUN mkdir -p uploads
 
-# Copy the application files
-COPY . .
+# Copy the model file first (explicitly)
+COPY garbage_classification_model.h5 /app/garbage_classification_model.h5
+
+# Copy static and template files
+COPY static/ /app/static/
+COPY templates/ /app/templates/
+
+# Copy the main application file
+COPY app.py /app/
 
 # Set environment variables
 ENV PYTHONUNBUFFERED=1
