@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Garbage Classification</title>
+  <link rel="stylesheet" href="/static/styles.css" />
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Garbage Classification</h1>
+      <p>Upload an image to classify the type of waste.</p>
+    </header>
+
+    <main>
+      <form id="upload-form">
+        <label class="file-label" for="image-input">Choose image</label>
+        <input id="image-input" type="file" name="image" accept="image/*" required />
+        <button id="submit-btn" type="submit">Predict</button>
+      </form>
+
+      <div id="preview" class="preview hidden">
+        <img id="preview-img" alt="preview" />
+        <div id="filename" class="filename"></div>
+      </div>
+
+      <section id="result" class="result hidden">
+        <h2>Result</h2>
+        <div class="result-row"><span class="key">Label:</span> <span id="label" class="val"></span></div>
+      </section>
+    </main>
+
+    <footer>
+      <a href="/health" target="_blank">Health Check</a>
+    </footer>
+  </div>
+
+  <script src="/static/app.js"></script>
+  <script>
+    // Progressive enhancement: show a basic warning if JS disabled
+  </script>
+  <noscript>
+    <div class="noscript">Enable JavaScript to use this app.</div>
+  </noscript>
+</body>
+</html>
+
+

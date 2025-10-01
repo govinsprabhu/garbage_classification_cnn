@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: garbage-classification
+    env: docker
+    region: oregon  # or choose your preferred region
+    plan: free  # or choose your preferred plan
+    branch: main
+    healthCheckPath: /health
+    dockerfilePath: ./Dockerfile
+    envVars:
+      - key: HOST
+        value: 0.0.0.0
+      - key: PORT
+        value: 8000
+      - key: DEBUG
+        value: false
+    autoDeploy: true
