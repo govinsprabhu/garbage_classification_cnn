@@ -17,6 +17,26 @@ UPLOADS_DIR = os.path.join(BASE_DIR, "uploads")
 MODEL_PATH = os.path.join(BASE_DIR, "garbage_classification_model.h5")
 labels =['cardboard', 'glass', 'metal', 'paper', 'plastic', 'trash']
 
+# Recycling rates in USD per kg
+RECYCLING_RATES = {
+    'cardboard': 0.10,  # $0.10 per kg
+    'glass': 0.15,      # $0.15 per kg
+    'metal': 2.00,      # $2.00 per kg
+    'paper': 0.20,      # $0.20 per kg
+    'plastic': 0.30,    # $0.30 per kg
+    'trash': 0.00       # No value for general trash
+}
+
+# Recycling tips
+RECYCLING_TIPS = {
+    'cardboard': 'Flatten boxes to save space. Remove any tape or staples.',
+    'glass': 'Rinse containers. Sort by color if required by your recycling center.',
+    'metal': 'Clean and crush cans to save space. Remove any non-metal parts.',
+    'paper': 'Keep paper dry and clean. Remove any plastic wrapping.',
+    'plastic': 'Check the recycling number. Rinse containers. Remove caps if different material.',
+    'trash': 'Consider if any parts could be recycled separately.'
+}
+
 def load_ml_model():
     try:
         print(f"Current working directory: {os.getcwd()}")
@@ -108,12 +128,25 @@ def create_app() -> Flask:
         print("Predicted class index:", predicted_class)
         label = labels[predicted_class]
         
+        # Get recycling information
+        recycling_rate = RECYCLING_RATES[label]
+        recycling_tip = RECYCLING_TIPS[label]
+        
         return jsonify({
             "filename": image_file.filename,
             "saved_as": safe_name,
             "prediction": {
                 "label": label,
-                "probabilities": {labels[i]: float(prob) for i, prob in enumerate(probabilities)}
+                "probabilities": {labels[i]: float(prob) for i, prob in enumerate(probabilities)},
+                "recycling_info": {
+                    "rate_per_kg": recycling_rate,
+                    "example_earnings": {
+                        "1kg": recycling_rate * 1,
+                        "5kg": recycling_rate * 5,
+                        "10kg": recycling_rate * 10
+                    },
+                    "tip": recycling_tip
+                }
             }
         })
 

@@ -8,6 +8,11 @@
   const result = document.getElementById('result');
   const labelEl = document.getElementById('label');
   const confidenceEl = document.getElementById('confidence');
+  const rateEl = document.getElementById('rate');
+  const earnings1kgEl = document.getElementById('earnings-1kg');
+  const earnings5kgEl = document.getElementById('earnings-5kg');
+  const earnings10kgEl = document.getElementById('earnings-10kg');
+  const recyclingTipEl = document.getElementById('recycling-tip');
 
   function resetUI() {
     result.classList.add('hidden');
@@ -47,8 +52,22 @@
       if (!resp.ok) {
         throw new Error(data && data.error ? data.error : 'Prediction failed');
       }
-      labelEl.textContent = data.prediction.label;
-      //confidenceEl.textContent = `${(data.prediction.confidence * 100).toFixed(1)}%`;
+      // Update basic info
+      labelEl.textContent = data.prediction.label.toUpperCase();
+      
+      // Find the highest probability
+      const probs = data.prediction.probabilities;
+      const maxProb = Math.max(...Object.values(probs));
+      confidenceEl.textContent = `${(maxProb * 100).toFixed(1)}%`;
+      
+      // Update recycling information
+      const recyclingInfo = data.prediction.recycling_info;
+      rateEl.textContent = `$${recyclingInfo.rate_per_kg.toFixed(2)}`;
+      earnings1kgEl.textContent = `$${recyclingInfo.example_earnings['1kg'].toFixed(2)}`;
+      earnings5kgEl.textContent = `$${recyclingInfo.example_earnings['5kg'].toFixed(2)}`;
+      earnings10kgEl.textContent = `$${recyclingInfo.example_earnings['10kg'].toFixed(2)}`;
+      recyclingTipEl.textContent = recyclingInfo.tip;
+      
       result.classList.remove('hidden');
     } catch (err) {
       alert(err.message || 'Something went wrong');
