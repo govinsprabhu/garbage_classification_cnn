@@ -16,10 +16,19 @@ UPLOADS_DIR = os.path.join(BASE_DIR, "uploads")
 # Load model once
 MODEL_PATH = os.path.join(BASE_DIR, "garbage_classification_model.h5")
 labels =['cardboard', 'glass', 'metal', 'paper', 'plastic', 'trash']
-model = load_model(MODEL_PATH) if os.path.exists(MODEL_PATH) else None
-if model is not None:
+
+try:
+    print(f"Attempting to load model from: {MODEL_PATH}")
+    print(f"File exists: {os.path.exists(MODEL_PATH)}")
+    print(f"File size: {os.path.getsize(MODEL_PATH) if os.path.exists(MODEL_PATH) else 'File not found'} bytes")
+    
+    model = load_model(MODEL_PATH, compile=False)  # Added compile=False to avoid potential initialization issues
+    print("Model loaded successfully!")
     print("Loaded model summary:")
     model.summary()
+except Exception as e:
+    print(f"Error loading model: {str(e)}")
+    model = None
 
 
 def ensure_directories_exist() -> None:

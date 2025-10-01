@@ -15,6 +15,9 @@ RUN apt-get update && apt-get install -y \
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
+# Copy the model file first to ensure it exists
+COPY garbage_classification_model.h5 .
+
 # Copy the rest of the application
 COPY . .
 

@@ -4,3 +4,5 @@ __pycache__
 *.pyc
 uploads/*
 !uploads/.gitkeep
+# Make sure NOT to ignore the model file
+!garbage_classification_model.h5
