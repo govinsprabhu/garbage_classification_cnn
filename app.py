@@ -17,18 +17,45 @@ UPLOADS_DIR = os.path.join(BASE_DIR, "uploads")
 MODEL_PATH = os.path.join(BASE_DIR, "garbage_classification_model.h5")
 labels =['cardboard', 'glass', 'metal', 'paper', 'plastic', 'trash']
 
-try:
-    print(f"Attempting to load model from: {MODEL_PATH}")
-    print(f"File exists: {os.path.exists(MODEL_PATH)}")
-    print(f"File size: {os.path.getsize(MODEL_PATH) if os.path.exists(MODEL_PATH) else 'File not found'} bytes")
-    
-    model = load_model(MODEL_PATH, compile=False)  # Added compile=False to avoid potential initialization issues
-    print("Model loaded successfully!")
-    print("Loaded model summary:")
-    model.summary()
-except Exception as e:
-    print(f"Error loading model: {str(e)}")
-    model = None
+def load_ml_model():
+    try:
+        print(f"Current working directory: {os.getcwd()}")
+        print(f"BASE_DIR: {BASE_DIR}")
+        print(f"Looking for model at: {MODEL_PATH}")
+        
+        # List all files in the current directory
+        print("Files in current directory:")
+        for f in os.listdir(BASE_DIR):
+            print(f"- {f}")
+        
+        if not os.path.exists(MODEL_PATH):
+            raise FileNotFoundError(f"Model file not found at {MODEL_PATH}")
+            
+        file_size = os.path.getsize(MODEL_PATH)
+        print(f"Model file size: {file_size} bytes")
+        
+        if file_size == 0:
+            raise ValueError("Model file is empty")
+            
+        # Try loading the model
+        import tensorflow as tf
+        print(f"TensorFlow version: {tf.__version__}")
+        model = load_model(MODEL_PATH, compile=False)
+        print("Model loaded successfully!")
+        
+        # Print model details
+        print("\nModel Summary:")
+        model.summary()
+        
+        return model
+    except Exception as e:
+        print(f"Error loading model: {str(e)}")
+        import traceback
+        print("Full traceback:")
+        traceback.print_exc()
+        return None
+
+model = load_ml_model()
 
 
 def ensure_directories_exist() -> None:

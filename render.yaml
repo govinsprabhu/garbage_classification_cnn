@@ -2,8 +2,6 @@ services:
   - type: web
     name: garbage-classification
     env: docker
-    region: oregon  # or choose your preferred region
-    plan: free  # or choose your preferred plan
     branch: main
     healthCheckPath: /health
     dockerfilePath: ./Dockerfile
@@ -14,4 +12,6 @@ services:
         value: 8000
       - key: DEBUG
         value: false
+      - key: MODEL_PATH
+        value: /app/garbage_classification_model.h5
     autoDeploy: true

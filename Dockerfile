@@ -15,11 +15,22 @@ RUN apt-get update && apt-get install -y \
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy the model file first to ensure it exists
-COPY garbage_classification_model.h5 .
+# Create necessary directories
+RUN mkdir -p uploads
 
-# Copy the rest of the application
+# Copy the application files
 COPY . .
+
+# Set environment variables
+ENV PYTHONUNBUFFERED=1
+ENV PORT=8000
+ENV HOST=0.0.0.0
+
+# Expose port
+EXPOSE 8000
+
+# Run the application
+CMD ["python", "app.py"]
 
 # Create uploads directory
 RUN mkdir -p uploads
