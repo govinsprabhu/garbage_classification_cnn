@@ -13,8 +13,7 @@ STATIC_DIR = os.path.join(BASE_DIR, "static")
 TEMPLATES_DIR = os.path.join(BASE_DIR, "templates")
 UPLOADS_DIR = os.path.join(BASE_DIR, "uploads")
 
-# Load model once
-MODEL_PATH = os.path.join(BASE_DIR, "garbage_classification_model.h5")
+# Constants
 labels =['cardboard', 'glass', 'metal', 'paper', 'plastic', 'trash']
 
 # Recycling rates in USD per kg
@@ -37,7 +36,14 @@ RECYCLING_TIPS = {
     'trash': 'Consider if any parts could be recycled separately.'
 }
 
+
+def ensure_directories_exist() -> None:
+
+    os.makedirs(UPLOADS_DIR, exist_ok=True)
+
+
 def load_ml_model():
+    MODEL_PATH = os.path.join(BASE_DIR, "garbage_classification_model.h5")
     try:
         print(f"Current working directory: {os.getcwd()}")
         print(f"BASE_DIR: {BASE_DIR}")
@@ -75,16 +81,10 @@ def load_ml_model():
         traceback.print_exc()
         return None
 
-model = load_ml_model()
-
-
-def ensure_directories_exist() -> None:
-
-    os.makedirs(UPLOADS_DIR, exist_ok=True)
-
-
 def create_app() -> Flask:
-
+    # Load the model when creating the app
+    model = load_ml_model()
+    
     ensure_directories_exist()
     app = Flask(__name__, static_folder=STATIC_DIR, template_folder=TEMPLATES_DIR)
 
@@ -98,6 +98,8 @@ def create_app() -> Flask:
 
     @app.route("/predict", methods=["POST"]) 
     def predict() -> Any:
+        nonlocal model  # Access the model from the outer scope
+        
         # Expecting a file field named 'image'
         if "image" not in request.files:
             return jsonify({"error": "No image file provided. Use form field 'image'."}), 400
