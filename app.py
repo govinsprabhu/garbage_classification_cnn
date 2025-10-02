@@ -6,6 +6,7 @@ from flask import Flask, request, jsonify, render_template, send_from_directory
 import numpy as np
 from tensorflow.keras.models import load_model
 from tensorflow.keras.preprocessing import image
+from tensorflow.keras.layers import Input
 
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -63,9 +64,12 @@ def load_ml_model():
         if file_size == 0:
             raise ValueError("Model file is empty")
             
-        # Try loading the model
+        # Try loading the model with custom objects
         import tensorflow as tf
         print(f"TensorFlow version: {tf.__version__}")
+        
+        # Let's try the alternate model file which might be more compatible
+        MODEL_PATH = os.path.join(BASE_DIR, "garbage_classification_model.h5")
         model = load_model(MODEL_PATH, compile=False)
         print("Model loaded successfully!")
         
