@@ -19,7 +19,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 RUN mkdir -p uploads
 
 # Copy the model file first (explicitly)
-COPY garbage_classification_model.h5 /app/garbage_classification_model.h5
+COPY garbage_classification_model_new.h5 /app/garbage_classification_model_new.h5
 
 # Copy static and template files
 COPY static/ /app/static/

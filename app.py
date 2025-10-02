@@ -44,7 +44,7 @@ def ensure_directories_exist() -> None:
 
 
 def load_ml_model():
-    MODEL_PATH = os.path.join(BASE_DIR, "garbage_classification_model.h5")
+    MODEL_PATH = os.path.join(BASE_DIR, "garbage_classification_model_new.h5")
     try:
         print(f"Current working directory: {os.getcwd()}")
         print(f"BASE_DIR: {BASE_DIR}")
