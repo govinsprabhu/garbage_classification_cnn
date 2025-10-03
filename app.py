@@ -69,7 +69,7 @@ def load_ml_model():
         print(f"TensorFlow version: {tf.__version__}")
         
         # Let's try the alternate model file which might be more compatible
-        MODEL_PATH = os.path.join(BASE_DIR, "garbage_classification_model.h5")
+        MODEL_PATH = os.path.join(BASE_DIR, "garbage_classification_model_new.h5")
         model = load_model(MODEL_PATH, compile=False)
         print("Model loaded successfully!")
         
