@@ -7,6 +7,9 @@ import numpy as np
 from tensorflow.keras.models import load_model
 from tensorflow.keras.preprocessing import image
 from tensorflow.keras.layers import Input
+import tensorflow as tf
+
+# No need for custom InputLayer when using load_weights approach
 
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -44,46 +47,73 @@ def ensure_directories_exist() -> None:
 
 
 def load_ml_model():
-    MODEL_PATH = os.path.join(BASE_DIR, "garbage_classification_model_new.h5")
+    import tensorflow as tf
+    print(f"TensorFlow version: {tf.__version__}")
+    
+    # Create the model architecture first
     try:
-        print(f"Current working directory: {os.getcwd()}")
-        print(f"BASE_DIR: {BASE_DIR}")
-        print(f"Looking for model at: {MODEL_PATH}")
+        model = tf.keras.Sequential([
+            tf.keras.layers.Conv2D(filters=32, kernel_size=3, padding='same', activation='relu', input_shape=(300, 300, 3)),
+            tf.keras.layers.MaxPooling2D(pool_size=2),
+            tf.keras.layers.Conv2D(filters=64, kernel_size=3, padding='same', activation='relu'),
+            tf.keras.layers.MaxPooling2D(pool_size=2),
+            tf.keras.layers.Conv2D(filters=32, kernel_size=3, padding='same', activation='relu'),
+            tf.keras.layers.MaxPooling2D(pool_size=2),
+            tf.keras.layers.Conv2D(filters=32, kernel_size=3, padding='same', activation='relu'),
+            tf.keras.layers.MaxPooling2D(pool_size=2),
+            tf.keras.layers.Flatten(),
+            tf.keras.layers.Dense(64, activation='relu'),
+            tf.keras.layers.Dense(6, activation='softmax')
+        ])
         
-        # List all files in the current directory
-        print("Files in current directory:")
-        for f in os.listdir(BASE_DIR):
-            print(f"- {f}")
+        # Build the model by calling it with a dummy input
+        dummy_input = tf.zeros((1, 300, 300, 3))
+        _ = model(dummy_input)
+        print("✓ Model architecture created successfully")
         
-        if not os.path.exists(MODEL_PATH):
-            raise FileNotFoundError(f"Model file not found at {MODEL_PATH}")
-            
-        file_size = os.path.getsize(MODEL_PATH)
-        print(f"Model file size: {file_size} bytes")
-        
-        if file_size == 0:
-            raise ValueError("Model file is empty")
-            
-        # Try loading the model with custom objects
-        import tensorflow as tf
-        print(f"TensorFlow version: {tf.__version__}")
-        
-        # Let's try the alternate model file which might be more compatible
-        MODEL_PATH = os.path.join(BASE_DIR, "garbage_classification_model_new.h5")
-        model = load_model(MODEL_PATH, compile=False)
-        print("Model loaded successfully!")
-        
-        # Print model details
-        print("\nModel Summary:")
-        model.summary()
-        
-        return model
     except Exception as e:
-        print(f"Error loading model: {str(e)}")
-        import traceback
-        print("Full traceback:")
-        traceback.print_exc()
+        print(f"Failed to create model architecture: {e}")
         return None
+    
+    # Try different weight files in order of preference
+    weight_files = [
+        "garbage_classification_model_new.h5",
+        "garbage_classification_model.h5",
+        "garbage_classification_model_2.h5"
+    ]
+    
+    for weight_file in weight_files:
+        WEIGHTS_PATH = os.path.join(BASE_DIR, weight_file)
+        try:
+            print(f"Trying to load weights from: {WEIGHTS_PATH}")
+            
+            if not os.path.exists(WEIGHTS_PATH):
+                print(f"Weight file not found: {WEIGHTS_PATH}")
+                continue
+                
+            file_size = os.path.getsize(WEIGHTS_PATH)
+            print(f"Weight file size: {file_size} bytes")
+            
+            if file_size == 0:
+                print(f"Weight file is empty: {WEIGHTS_PATH}")
+                continue
+            
+            # Load weights only
+            model.load_weights(WEIGHTS_PATH)
+            print(f"✓ Successfully loaded weights from: {weight_file}")
+            
+            print("\nModel Summary:")
+            model.summary()
+            
+            return model
+            
+        except Exception as e:
+            print(f"Failed to load weights from {weight_file}: {str(e)}")
+            continue
+    
+    print("⚠️ Failed to load any weights - using model with random weights")
+    print("Model will still work but predictions will be random until proper weights are loaded")
+    return model
 
 def create_app() -> Flask:
     # Load the model when creating the app

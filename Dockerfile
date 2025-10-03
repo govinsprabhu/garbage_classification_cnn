@@ -18,8 +18,9 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Create necessary directories
 RUN mkdir -p uploads
 
-# Copy the model file first (explicitly)
-COPY garbage_classification_model_new.h5 /app/garbage_classification_model_new.h5
+# Copy model files
+COPY garbage_classification_model*.h5 /app/
+COPY garbage_classification_model*.keras /app/
 
 # Copy static and template files
 COPY static/ /app/static/
@@ -36,14 +37,8 @@ ENV HOST=0.0.0.0
 # Expose port
 EXPOSE 8000
 
-# Run the application
-CMD ["python", "app.py"]
-
 # Create uploads directory
 RUN mkdir -p uploads
-
-# Expose port
-EXPOSE 8000
 
 # Set environment variables
 ENV HOST=0.0.0.0
